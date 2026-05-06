@@ -232,6 +232,9 @@ export default class TilingKeybindingHandler {
                 case DynamicKeybindings.FAVORITE_LAYOUT:
                     this._dynamicFavoriteLayout(window, shortcutName);
                     break;
+                case DynamicKeybindings.MOVE_MONITOR:
+                    this._dynamicMoveMonitor(window, shortcutName);
+                    break;
                 default:
                     Twm.toggleTiling(window, rect);
             }
@@ -536,6 +539,102 @@ export default class TilingKeybindingHandler {
         }
 
         Twm.toggleTiling(window, Twm.getTileFor(shortcutName, workArea, window.get_monitor()));
+    }
+
+    /**
+     * Moves a window to the neighboring monitor in the shortcut's direction
+     * when it is already tiled at the matching position. Wraps around to the
+     * monitor at the opposite edge when no neighbor exists. The window is
+     * tiled at the mirrored position on the new monitor so it appears to
+     * continue seamlessly across the screen boundary.
+     *
+     * @param {Meta.Window} window a Meta.Window.
+     * @param {string} shortcutName the shortcut.
+     */
+    _dynamicMoveMonitor(window, shortcutName) {
+        const workArea = new Rect(window.get_work_area_current_monitor());
+        const rect = Twm.getTileFor(shortcutName, workArea, window.get_monitor());
+
+        if (!window.isTiled || !window.tiledRect) {
+            Twm.toggleTiling(window, rect);
+            return;
+        }
+
+        // Check if window already occupies the target position for this shortcut
+        const targetRect = Twm.getDefaultTileFor(shortcutName, workArea);
+        if (!targetRect || !window.tiledRect.equal(targetRect)) {
+            Twm.toggleTiling(window, rect);
+            return;
+        }
+
+        // Map the shortcut to a monitor direction and the tile shortcut to use
+        // on the destination monitor (the mirror of the travel direction).
+        let metaDir, oppositeShortcut;
+        switch (shortcutName) {
+            case 'tile-left-half':
+                metaDir = Meta.DisplayDirection.LEFT;
+                oppositeShortcut = 'tile-right-half';
+                break;
+            case 'tile-right-half':
+                metaDir = Meta.DisplayDirection.RIGHT;
+                oppositeShortcut = 'tile-left-half';
+                break;
+            case 'tile-top-half':
+                metaDir = Meta.DisplayDirection.UP;
+                oppositeShortcut = 'tile-bottom-half';
+                break;
+            case 'tile-bottom-half':
+                metaDir = Meta.DisplayDirection.DOWN;
+                oppositeShortcut = 'tile-top-half';
+                break;
+            case 'tile-topleft-quarter':
+                metaDir = Meta.DisplayDirection.LEFT;
+                oppositeShortcut = 'tile-topright-quarter';
+                break;
+            case 'tile-topright-quarter':
+                metaDir = Meta.DisplayDirection.RIGHT;
+                oppositeShortcut = 'tile-topleft-quarter';
+                break;
+            case 'tile-bottomleft-quarter':
+                metaDir = Meta.DisplayDirection.LEFT;
+                oppositeShortcut = 'tile-bottomright-quarter';
+                break;
+            case 'tile-bottomright-quarter':
+                metaDir = Meta.DisplayDirection.RIGHT;
+                oppositeShortcut = 'tile-bottomleft-quarter';
+                break;
+            default:
+                // tile-maximize has no meaningful travel direction
+                Twm.toggleTiling(window, rect);
+                return;
+        }
+
+        const currMonitor = window.get_monitor();
+        let neighborMonitor = global.display.get_monitor_neighbor_index(currMonitor, metaDir);
+
+        // Wrap: if no neighbor in that direction, find the monitor at the opposite edge
+        if (neighborMonitor === -1) {
+            const oppositeDir = metaDir === Meta.DisplayDirection.LEFT ? Meta.DisplayDirection.RIGHT
+                : metaDir === Meta.DisplayDirection.RIGHT ? Meta.DisplayDirection.LEFT
+                : metaDir === Meta.DisplayDirection.UP ? Meta.DisplayDirection.DOWN
+                : Meta.DisplayDirection.UP;
+            let candidate = currMonitor;
+            let next;
+            while ((next = global.display.get_monitor_neighbor_index(candidate, oppositeDir)) !== -1)
+                candidate = next;
+
+            neighborMonitor = candidate !== currMonitor ? candidate : -1;
+        }
+
+        if (neighborMonitor === -1) {
+            // Single monitor or disconnected layout — fall back to normal tiling
+            Twm.toggleTiling(window, rect);
+            return;
+        }
+
+        const newWorkArea = new Rect(window.get_work_area_for_monitor(neighborMonitor));
+        const newRect = Twm.getDefaultTileFor(oppositeShortcut, newWorkArea);
+        Twm.tile(window, newRect, { monitorNr: neighborMonitor, openTilingPopup: false });
     }
 
     _dynamicFavoriteLayout(window, shortcutName) {

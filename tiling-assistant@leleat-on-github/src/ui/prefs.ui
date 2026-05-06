@@ -277,6 +277,18 @@
               </child>
             </object>
           </child>
+          <child>
+            <object class="AdwActionRow" id="dynamic_keybinding_move_monitor_row">
+              <property name="title" translatable="yes" comments="Translators: This setting is under the preference group 'Dynamic Keybinding Behavior' in the 'General' tab. It causes tiling shortcuts to move the window to the adjacent monitor when it is already tiled in the shortcut's direction">Move Monitor</property>
+              <property name="subtitle" translatable="yes" comments="Translators: This is an explanation for the 'Move Monitor' option for the 'Dynamic Keybinding Behavior' in the 'General' tab">Move the window to the next monitor in the shortcut's direction when it is already tiled there. Wraps around to the opposite edge.</property>
+              <property name="activatable-widget">dynamic_keybinding_move_monitor_button</property>
+              <child type="prefix">
+                <object class="GtkCheckButton" id="dynamic_keybinding_move_monitor_button">
+                  <property name="group">dynamic_keybinding_disabled_button</property>
+                </object>
+              </child>
+            </object>
+          </child>
         </object>
       </child>
       <!-- ======================================================================================== -->
