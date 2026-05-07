@@ -167,7 +167,8 @@ export default class Prefs extends ExtensionPreferences {
                     'dynamic_keybinding_tiling_state_row',
                     'dynamic_keybinding_tiling_state_windows_row',
                     'dynamic_keybinding_favorite_layout_row',
-                    'dynamic_keybinding_move_monitor_row'
+                    'dynamic_keybinding_move_monitor_row',
+                    'dynamic_keybinding_tiling_state_move_monitor_row'
                 ]
             },
             {
