@@ -289,18 +289,7 @@
               </child>
             </object>
           </child>
-          <child>
-            <object class="AdwActionRow" id="dynamic_keybinding_tiling_state_move_monitor_row">
-              <property name="title" translatable="yes" comments="Translators: This setting is under the preference group 'Dynamic Keybinding Behavior' in the 'General' tab. It combines Tiling State and Move Monitor behaviors.">Tiling State (Move Monitor)</property>
-              <property name="subtitle" translatable="yes" comments="Translators: This is an explanation for the 'Tiling State (Move Monitor)' option for the 'Dynamic Keybinding Behavior' in the 'General' tab">Like 'Tiling State', but moves the window to the next monitor when it is already tiled in the shortcut's direction</property>
-              <property name="activatable-widget">dynamic_keybinding_tiling_state_move_monitor_button</property>
-              <child type="prefix">
-                <object class="GtkCheckButton" id="dynamic_keybinding_tiling_state_move_monitor_button">
-                  <property name="group">dynamic_keybinding_disabled_button</property>
-                </object>
-              </child>
-            </object>
-          </child>
+
         </object>
       </child>
       <!-- ======================================================================================== -->

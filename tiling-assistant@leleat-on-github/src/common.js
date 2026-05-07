@@ -153,7 +153,6 @@ export class DynamicKeybindings {
     static TILING_STATE_WINDOWS = 3;
     static FAVORITE_LAYOUT = 4;
     static MOVE_MONITOR = 5;
-    static TILING_STATE_MOVE_MONITOR = 6;
 }
 
 export const FocusHint = Object.freeze({

@@ -235,16 +235,6 @@ export default class TilingKeybindingHandler {
                 case DynamicKeybindings.MOVE_MONITOR:
                     this._dynamicMoveMonitor(window, shortcutName);
                     break;
-                case DynamicKeybindings.TILING_STATE_MOVE_MONITOR: {
-                    const result = this._tryMoveMonitor(window, shortcutName);
-                    if (result === 'no_match') {
-                        // Use simple tile-to-target rather than _dynamicTilingState to
-                        // avoid Tiling State's "opposite direction = untile" transitions,
-                        // which would eject the window out of the cross-monitor flow.
-                        Twm.toggleTiling(window, rect);
-                    }
-                    break;
-                }
                 default:
                     Twm.toggleTiling(window, rect);
             }
